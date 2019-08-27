@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>East Seven 全栈学徒自习室</title>
-    <link>http://blog.eastseven.cn/</link>
-    <description>Recent content on East Seven 全栈学徒自习室</description>
+    <title>spring-boot on East Seven 全栈学徒自习室</title>
+    <link>http://blog.eastseven.cn/tags/spring-boot/</link>
+    <description>Recent content in spring-boot on East Seven 全栈学徒自习室</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
     <lastBuildDate>Tue, 27 Aug 2019 11:35:08 +0800</lastBuildDate>
     
-	<atom:link href="http://blog.eastseven.cn/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://blog.eastseven.cn/tags/spring-boot/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>

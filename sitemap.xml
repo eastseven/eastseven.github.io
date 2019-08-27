@@ -4,10 +4,27 @@
   
   <url>
     <loc>http://blog.eastseven.cn/</loc>
+    <lastmod>2019-08-27T11:35:08+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.eastseven.cn/post/</loc>
+    <lastmod>2019-08-27T11:35:08+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.eastseven.cn/post/spring-boot-deploy-in-centos/</loc>
+    <lastmod>2019-08-27T11:35:08+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://blog.eastseven.cn/tags/spring-boot/</loc>
+    <lastmod>2019-08-27T11:35:08+08:00</lastmod>
   </url>
   
   <url>
     <loc>http://blog.eastseven.cn/tags/</loc>
+    <lastmod>2019-08-27T11:35:08+08:00</lastmod>
   </url>
   
 </urlset>

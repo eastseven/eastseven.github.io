@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
+  <link rel="dns-prefetch" href="//www.google-analytics.com" />
+  
+  <link rel="canonical" href="/post/spring-boot-deploy-in-centos/" />
+  
+  <meta name="description" content="Spring Boot CentOS 服务部署">
+  
+  <title>
+	  
+	    Spring Boot CentOS 服务部署 | East Seven 全栈学徒自习室
+	  
+  </title>
+
+  
+  <meta property="og:site_name" content="East Seven 全栈学徒自习室" />
+  <meta property="og:locale" content="zh-CN" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Spring Boot CentOS 服务部署" />
+  <meta property="og:description" content="Spring Boot CentOS 服务部署 | East Seven 全栈学徒自习室" />
+  <meta property="og:url" content="/post/spring-boot-deploy-in-centos/" />
+  
+
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/uikit/2.27.2/css/uikit.min.css" />
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/9.10.0/styles/github.min.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<body>
+	<div class="uk-block uk-block-large uk-block-muted">
+		<div class="uk-container uk-container-center">
+			<div class="uk-grid">
+				<div class="uk-width-large-1-10 uk-hidden-medium uk-hidden-small"></div>
+				<div class="uk-width-large-8-10 uk-width-medium-1-1 uk-width-small-1-1">
+          <div id="header" class="clearfix">
+            <div class="uk-float-left">
+              <h2><a href="/">East Seven 全栈学徒自习室</a></h2>
+            </div>
+            <div class="uk-float-right">
+              <a href="/" class="uk-button">Home</a>
+            </div>
+          </div>
+				</div>
+				<div class="uk-width-large-1-10 uk-hidden-medium uk-hidden-small"></div>
+			</div>
+		</div>
+	</div>
+
+<div class="uk-block uk-block-default">
+	<div class="uk-container uk-container-center">
+		<div class="uk-grid">
+			<div class="uk-width-large-1-10 uk-hidden-medium uk-hidden-small"></div>
+			<div class="uk-width-large-8-10 uk-width-medium-1-1 uk-width-small-1-1">
+				<article class="uk-article">
+					<h1 class="uk-article-title" style="font-size: 23px;">
+						Spring Boot CentOS 服务部署
+					</h1>
+					
+					<p class="uk-article-meta">Posted on Tue, Aug 27, 2019 |  <a href="http://blog.eastseven.cn/tags/spring-boot" class="uk-button uk-button-mini">#spring-boot</a></p>
+
+          
+					
+
+<h2 id="spring-boot-centos-服务部署">Spring Boot CentOS 服务部署</h2>
+
+<p>服务默认存放目录</p>
+
+<pre><code class="language-shell"> cd /etc/systemd/system/multi-user.target.wants
+</code></pre>
+
+<ul>
+<li><p>1.创建应用服务配置，示例命名为 <em>/root/my-spring-boot/my-spring-boot.service</em></p>
+
+<pre><code class="language-shell">[Unit]
+Description=服务名称，随便写
+After=syslog.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/java -jar -Dspring.profiles.active=test /root/my-spring-boot/app.jar
+
+[Install]
+WantedBy=multi-user.target
+</code></pre></li>
+
+<li><p>2.创建软连接</p>
+
+<pre><code class="language-shell">ln -s /root/my-spring-boot/my-spring-boot.service /etc/systemd/system/multi-user.target.wants/my-spring-boot.service
+</code></pre></li>
+
+<li><p>3.更新systemctl</p>
+
+<pre><code class="language-shell">systemctl daemon-reload
+</code></pre></li>
+</ul>
+
+<h3 id="引用参考">引用参考</h3>
+
+<ul>
+<li><a href="http://blog.csdn.net/ClementAD/article/details/53392360">把spring-boot项目配置为Linux systemd服务，并注册自启动</a></li>
+</ul>
+
+          
+				</article>
+			</div>
+			<div class="uk-width-large-1-10 uk-hidden-medium uk-hidden-small"></div>
+		</div>
+    <div class="uk-grid">
+      <div class="uk-width-large-1-10"></div>
+      <div class="uk-width-large-8-10">
+        <ul class="uk-pagination">
+          
+          
+        </ul>
+      </div>
+      <div class="uk-width-large-1-10"></div>
+    </div>
+    <div class="uk-grid">
+      <div class="uk-width-large-1-10"></div>
+      <div class="uk-width-large-8-10">
+        <div class="uk-panel uk-panel-box uk-panel-box-secondary">
+          <h3 class="uk-panel-title">Related Posts</h3>
+          
+          
+          <ul class="uk-list uk-list-striped">
+            
+              
+              
+              
+            
+              
+              
+              
+            
+              
+              
+              
+            
+              
+              
+              
+            
+              
+              
+              
+            
+          </ul>
+        </div>
+      </div>
+      <div class="uk-width-large-1-10"></div>
+    </div>
+    <div class="uk-grid">
+      <div class="uk-width-large-1-10"></div>
+      <div class="uk-width-large-8-10">
+        <div id="disqus_thread" data-uk-scrollspy></div>
+      </div>
+      <div class="uk-width-large-1-10"></div>
+    </div>
+	</div>
+</div>
+
+	<div id="footer" class="uk-block uk-block-large uk-block-muted" data-uk-scrollspy="{repeat: true, delay: 600}">
+		<div class="uk-container uk-container-center">
+			<div class="uk-grid">
+				<div class="uk-width-large-1-10 uk-hidden-medium uk-hidden-small"></div>
+				<div class="uk-width-large-8-10 uk-width-medium-1-1 uk-width-small-1-1">
+                  <div class="uk-grid">
+                    <div class="uk-width-1-1">
+                      &copy; Copyright -2016  East Seven
+                    </div>
+                    <div class="uk-width-1-1">
+                      Powered by <a href="http://gohugo.io">Hugo</a> | Themed by <a href="https://github.com/leopku/hugo-theme-next">NeXT</a>
+                    </div>
+                  </div>
+
+				</div>
+				<div class="uk-width-large-1-10 uk-hidden-medium uk-hidden-small"></div>
+			</div>
+		</div>
+	</div>
+
+	<script src="//cdn.jsdelivr.net/jquery/1.11.3/jquery.min.js"></script>
+	<script src="//cdn.jsdelivr.net/uikit/2.27.2/js/uikit.min.js"></script>
+	<script src="//cdn.jsdelivr.net/highlight.js/9.10.0/highlight.min.js"></script>
+	<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+
+
+</body>
+</html>
+
+
+
