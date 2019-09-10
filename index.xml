@@ -6,10 +6,19 @@
     <description>Recent content on East Seven 全栈学徒自习室</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-CN</language>
-    <lastBuildDate>Tue, 27 Aug 2019 11:35:08 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 27 Aug 2019 14:21:11 +0800</lastBuildDate>
     
 	<atom:link href="http://blog.eastseven.cn/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Spring Boot Package</title>
+      <link>http://blog.eastseven.cn/post/spring-boot-package/</link>
+      <pubDate>Tue, 27 Aug 2019 14:21:11 +0800</pubDate>
+      
+      <guid>http://blog.eastseven.cn/post/spring-boot-package/</guid>
+      <description>Spring Boot Package 1.</description>
+    </item>
     
     <item>
       <title>Spring Boot CentOS 服务部署</title>

@@ -6,13 +6,13 @@
   <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
   <link rel="dns-prefetch" href="//www.google-analytics.com" />
   
-  <link rel="canonical" href="/post/spring-boot-deploy-in-centos/" />
+  <link rel="canonical" href="/post/spring-boot-package/" />
   
-  <meta name="description" content="Spring Boot CentOS 服务部署">
+  <meta name="description" content="Spring Boot Package">
   
   <title>
 	  
-	    Spring Boot CentOS 服务部署 | East Seven 全栈学徒自习室
+	    Spring Boot Package | East Seven 全栈学徒自习室
 	  
   </title>
 
@@ -20,9 +20,9 @@
   <meta property="og:site_name" content="East Seven 全栈学徒自习室" />
   <meta property="og:locale" content="zh-CN" />
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Spring Boot CentOS 服务部署" />
-  <meta property="og:description" content="Spring Boot CentOS 服务部署 | East Seven 全栈学徒自习室" />
-  <meta property="og:url" content="/post/spring-boot-deploy-in-centos/" />
+  <meta property="og:title" content="Spring Boot Package" />
+  <meta property="og:description" content="Spring Boot Package | East Seven 全栈学徒自习室" />
+  <meta property="og:url" content="/post/spring-boot-package/" />
   
 
   <link rel="stylesheet" href="//cdn.jsdelivr.net/uikit/2.27.2/css/uikit.min.css" />
@@ -57,7 +57,7 @@
 			<div class="uk-width-large-8-10 uk-width-medium-1-1 uk-width-small-1-1">
 				<article class="uk-article">
 					<h1 class="uk-article-title" style="font-size: 23px;">
-						Spring Boot CentOS 服务部署
+						Spring Boot Package
 					</h1>
 					
 					<p class="uk-article-meta">Posted on Tue, Aug 27, 2019 |  <a href="http://blog.eastseven.cn/tags/spring-boot" class="uk-button uk-button-mini">#spring-boot</a></p>
@@ -65,43 +65,86 @@
           
 					
 
-<h2 id="spring-boot-centos-服务部署">Spring Boot CentOS 服务部署</h2>
+<h2 id="spring-boot-package">Spring Boot Package</h2>
 
-<p>服务默认存放目录</p>
-
-<pre><code class="language-shell"> cd /etc/systemd/system/multi-user.target.wants
-</code></pre>
+<h3 id="1-使用-spring-boot-maven-plugin-打包">1. 使用<code>spring-boot-maven-plugin</code>打包</h3>
 
 <ul>
-<li><p>1.创建应用服务配置，示例命名为 <em>/root/my-spring-boot/my-spring-boot.service</em></p>
+<li><p><a href="http://docs.spring.io/spring-boot/docs/current/maven-plugin/">spring-boot-maven-plugin</a></p>
 
-<pre><code class="language-shell">[Unit]
-Description=服务名称，随便写
-After=syslog.target
+<pre><code class="language-mvn">
+生成一个可执行的```jar```文件
 
-[Service]
-Type=simple
-ExecStart=/usr/bin/java -jar -Dspring.profiles.active=test /root/my-spring-boot/app.jar
+### 2. 自定义打包
 
-[Install]
-WantedBy=multi-user.target
-</code></pre></li>
+由于默认打包方式生成的```jar```文件过于庞大，在带宽受限的网络环境下，部署速度太慢，这时就需要自定义可执行的```jar```文件，只把工程代码打包在```jar```文件中，将依赖文件都存放在其他目录，这样每次生成的```jar```文件体积就非常小，便于传输部署。
 
-<li><p>2.创建软连接</p>
+最简单的打包方式是使用```maven-jar-plugin```和```maven-dependency-plugin```插件，简单配置一下，即可实现。
 
-<pre><code class="language-shell">ln -s /root/my-spring-boot/my-spring-boot.service /etc/systemd/system/multi-user.target.wants/my-spring-boot.service
-</code></pre></li>
+</code></pre>
 
-<li><p>3.更新systemctl</p>
+<p>pom.xml```文件配置如下：</p>
 
-<pre><code class="language-shell">systemctl daemon-reload
+<pre><code class="language-maven">&lt;build&gt;
+&lt;plugins&gt;
+   &lt;plugin&gt;
+       &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+       &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+   &lt;/plugin&gt;
+   &lt;plugin&gt;
+       &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+       &lt;artifactId&gt;maven-dependency-plugin&lt;/artifactId&gt;
+   &lt;/plugin&gt;
+   &lt;plugin&gt;
+       &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+       &lt;artifactId&gt;maven-jar-plugin&lt;/artifactId&gt;
+       &lt;configuration&gt;
+           &lt;!--自定义jar文件名称，可选--&gt;
+           &lt;jarName&gt;app&lt;/jarName&gt;
+           &lt;archive&gt;
+               &lt;manifest&gt;
+                   &lt;addClasspath&gt;true&lt;/addClasspath&gt;
+                   &lt;!--maven-dependency-plugin 默认生成的依赖文件夹名称--&gt;
+                   &lt;classpathPrefix&gt;dependency/&lt;/classpathPrefix&gt;
+                   &lt;mainClass&gt;cn.eastseven.Application&lt;/mainClass&gt;
+               &lt;/manifest&gt;
+           &lt;/archive&gt;
+       &lt;/configuration&gt;
+   &lt;/plugin&gt;
+&lt;/plugins&gt;
+&lt;/build&gt;
 </code></pre></li>
 </ul>
 
-<h3 id="引用参考">引用参考</h3>
+<p>执行<code>mvn clean compile jar:jar dependency:copy-dependencies</code>命令</p>
+
+<pre><code class="language-target```目录下">
+</code></pre>
+
+<p>shell
+target
+    |<strong>classes
+    |</strong>dependency
+    |<strong>generated-source
+    |</strong>maven-archiver
+    |<strong>maven-status
+    |</strong>app.jar
+```</p>
+
+<p>其中<code>app.jar</code>和<code>dependency</code>就是部署时需要的文件</p>
+
+<p>执行<code>java -jar target/app.jar</code>即可</p>
+
+<p>PS: <em>这种打包方式没有分离配置文件。</em></p>
+
+<p><a href="https://github.com/eastseven/package-jar-without-dependency">示例源码</a></p>
+
+<h3 id="3-参考">3. 参考</h3>
 
 <ul>
-<li><a href="http://blog.csdn.net/ClementAD/article/details/53392360">把spring-boot项目配置为Linux systemd服务，并注册自启动</a></li>
+<li><a href="http://blog.csdn.net/xiao__gui/article/details/47341385">Maven生成可以直接运行的jar包的多种方式</a></li>
+<li><a href="http://blog.csdn.net/ssrc0604hx/article/details/54175027">【SpringBoot】迭代发布下的Jar瘦身实践</a></li>
+<li><a href="http://liyunpeng.iteye.com/blog/2321463">通过Maven构建打包Spring boot，并将config配置文件提取到jar文件外</a></li>
 </ul>
 
           
@@ -114,8 +157,8 @@ WantedBy=multi-user.target
       <div class="uk-width-large-8-10">
         <ul class="uk-pagination">
           
+            <li class="uk-float-left"><a href="http://blog.eastseven.cn/post/spring-boot-deploy-in-centos/">&lt; Previous</a></li>
           
-            <li class="uk-float-right"><a href="http://blog.eastseven.cn/post/spring-boot-package/">Next &gt;</a></li>
           
         </ul>
       </div>
@@ -141,8 +184,6 @@ WantedBy=multi-user.target
               
               
               
-                <li><a href="http://blog.eastseven.cn/post/spring-boot-package/">Spring Boot Package</a></li>
-              
             
               
               
@@ -154,6 +195,8 @@ WantedBy=multi-user.target
             
               
               
+              
+                <li><a href="http://blog.eastseven.cn/post/spring-boot-deploy-in-centos/">Spring Boot CentOS 服务部署</a></li>
               
             
           </ul>
