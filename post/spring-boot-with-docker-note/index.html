@@ -6,13 +6,13 @@
   <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
   <link rel="dns-prefetch" href="//www.google-analytics.com" />
   
-  <link rel="canonical" href="/post/spring-boot-package/" />
+  <link rel="canonical" href="/post/spring-boot-with-docker-note/" />
   
-  <meta name="description" content="Spring Boot Package">
+  <meta name="description" content="Spring Boot With Docker Note">
   
   <title>
 	  
-	    Spring Boot Package | East Seven 全栈学徒自习室
+	    Spring Boot With Docker Note | East Seven 全栈学徒自习室
 	  
   </title>
 
@@ -20,9 +20,9 @@
   <meta property="og:site_name" content="East Seven 全栈学徒自习室" />
   <meta property="og:locale" content="zh-CN" />
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="Spring Boot Package" />
-  <meta property="og:description" content="Spring Boot Package | East Seven 全栈学徒自习室" />
-  <meta property="og:url" content="/post/spring-boot-package/" />
+  <meta property="og:title" content="Spring Boot With Docker Note" />
+  <meta property="og:description" content="Spring Boot With Docker Note | East Seven 全栈学徒自习室" />
+  <meta property="og:url" content="/post/spring-boot-with-docker-note/" />
   
 
   <link rel="stylesheet" href="//cdn.jsdelivr.net/uikit/2.27.2/css/uikit.min.css" />
@@ -57,102 +57,47 @@
 			<div class="uk-width-large-8-10 uk-width-medium-1-1 uk-width-small-1-1">
 				<article class="uk-article">
 					<h1 class="uk-article-title" style="font-size: 23px;">
-						Spring Boot Package
+						Spring Boot With Docker Note
 					</h1>
 					
-					<p class="uk-article-meta">Posted on Tue, Aug 27, 2019 |  <a href="http://blog.eastseven.cn/tags/spring-boot" class="uk-button uk-button-mini">#spring-boot</a></p>
+					<p class="uk-article-meta">Posted on Tue, Aug 27, 2019 |  <a href="http://blog.eastseven.cn/tags/spring-boot" class="uk-button uk-button-mini">#spring-boot</a> <a href="http://blog.eastseven.cn/tags/note" class="uk-button uk-button-mini">#note</a></p>
 
           
 					
 
-<h2 id="spring-boot-package">Spring Boot Package</h2>
+<h2 id="spring-boot-with-docker-note">Spring Boot With Docker Note</h2>
 
-<h3 id="1-使用-spring-boot-maven-plugin-打包">1. 使用 <em>spring-boot-maven-plugin</em> 打包</h3>
+<h3 id="dockerfile">Dockerfile</h3>
+
+<p>通过java启动参数来设置时区</p>
+
+<pre><code class="language-docker">FROM frolvlad/alpine-oraclejdk8:slim
+MAINTAINER eastseven , &lt;eastseven@foxmail.com&gt;
+
+VOLUME /logs
+VOLUME /upload
+EXPOSE 8080
+
+ADD app.jar app.jar
+RUN sh -c 'touch app.jar'
+ENV JAVA_OPTS=&quot;-Xmx300m -Xms300m&quot;
+ENTRYPOINT [ &quot;sh&quot;, &quot;-c&quot;, &quot;java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar -Duser.timezone=GMT+8 app.jar&quot; ]
+</code></pre>
+
+<h3 id="build">build</h3>
+
+<pre><code class="language-shell">docker build -t eastseven/spring-boot .
+</code></pre>
+
+<h3 id="run">run</h3>
+
+<pre><code class="language-shell">docker run --rm -p 8080:8080 -v $(pwd)/logs:/logs -v $(pwd)/upload:/upload eastseven/spring-boot
+</code></pre>
+
+<h3 id="参考">参考</h3>
 
 <ul>
-<li><p><a href="http://docs.spring.io/spring-boot/docs/current/maven-plugin/">spring-boot-maven-plugin</a></p>
-
-<pre><code class="language-shell">mvn package
-</code></pre></li>
-</ul>
-
-<p>生成一个可执行的 <em>jar</em> 文件</p>
-
-<h3 id="2-自定义打包">2. 自定义打包</h3>
-
-<p>由于默认打包方式生成的 <em>jar</em> 文件过于庞大，在带宽受限的网络环境下，部署速度太慢，这时就需要自定义可执行的 <em>jar</em> 文件，只把工程代码打包在 <em>jar</em> 文件中，将依赖文件都存放在其他目录，这样每次生成的 <em>jar</em> 文件体积就非常小，便于传输部署。</p>
-
-<p>最简单的打包方式是使用 <em>maven-jar-plugin</em> 和 <em>maven-dependency-plugin</em> 插件，简单配置一下，即可实现。</p>
-
-<p><em>pom.xml</em> 文件配置如下：</p>
-
-<pre><code class="language-maven">&lt;build&gt;
-   &lt;plugins&gt;
-       &lt;plugin&gt;
-           &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
-           &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
-       &lt;/plugin&gt;
-       &lt;plugin&gt;
-           &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
-           &lt;artifactId&gt;maven-dependency-plugin&lt;/artifactId&gt;
-       &lt;/plugin&gt;
-       &lt;plugin&gt;
-           &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
-           &lt;artifactId&gt;maven-jar-plugin&lt;/artifactId&gt;
-           &lt;configuration&gt;
-               &lt;!--自定义jar文件名称，可选--&gt;
-               &lt;jarName&gt;app&lt;/jarName&gt;
-               &lt;archive&gt;
-                   &lt;manifest&gt;
-                       &lt;addClasspath&gt;true&lt;/addClasspath&gt;
-                       &lt;!--maven-dependency-plugin 默认生成的依赖文件夹名称--&gt;
-                       &lt;classpathPrefix&gt;dependency/&lt;/classpathPrefix&gt;
-                       &lt;mainClass&gt;cn.eastseven.Application&lt;/mainClass&gt;
-                   &lt;/manifest&gt;
-               &lt;/archive&gt;
-           &lt;/configuration&gt;
-       &lt;/plugin&gt;
-   &lt;/plugins&gt;
-&lt;/build&gt;
-</code></pre>
-
-<p>执行命令：</p>
-
-<pre><code class="language-shell">mvn clean compile jar:jar dependency:copy-dependencies
-</code></pre>
-
-<p><em>target</em> 目录下</p>
-
-<pre><code class="language-shell">target
-    |__classes
-    |__dependency
-    |__generated-source
-    |__maven-archiver
-    |__maven-status
-    |__app.jar
-</code></pre>
-
-<p>其中 <em>app.jar</em> 和 <em>dependency</em> 就是部署时需要的文件</p>
-
-<p>执行命令：</p>
-
-<pre><code class="language-shell">java -jar target/app.jar
-</code></pre>
-
-<p>PS:  <em>这种打包方式没有分离配置文件。</em></p>
-
-<p><a href="https://github.com/eastseven/package-jar-without-dependency">示例源码</a></p>
-
-<h3 id="3-参考">3. 参考</h3>
-
-<ul>
-<li><a href="http://blog.csdn.net/xiao__gui/article/details/47341385">Maven生成可以直接运行的jar包的多种方式</a></li>
-<li><a href="http://blog.csdn.net/ssrc0604hx/article/details/54175027">【SpringBoot】迭代发布下的Jar瘦身实践</a></li>
-
-<li><p><a href="http://liyunpeng.iteye.com/blog/2321463">通过Maven构建打包Spring boot，并将config配置文件提取到jar文件外</a></p>
-
-<pre><code>
-</code></pre></li>
+<li><a href="https://spring.io/guides/gs/spring-boot-docker/">官方教程 Spring Boot with Docker</a></li>
 </ul>
 
           
@@ -165,7 +110,7 @@
       <div class="uk-width-large-8-10">
         <ul class="uk-pagination">
           
-            <li class="uk-float-left"><a href="http://blog.eastseven.cn/post/spring-boot-deploy-in-centos/">&lt; Previous</a></li>
+            <li class="uk-float-left"><a href="http://blog.eastseven.cn/post/ngrok-note/">&lt; Previous</a></li>
           
           
         </ul>
@@ -199,6 +144,26 @@
             
               
               
+              
+            
+              
+              
+              
+            
+              
+              
+              
+            
+              
+              
+              
+                <li><a href="http://blog.eastseven.cn/post/ngrok-note/">ngrok 简易使用指南</a></li>
+              
+            
+              
+              
+              
+                <li><a href="http://blog.eastseven.cn/post/spring-boot-package/">Spring Boot Package</a></li>
               
             
               
